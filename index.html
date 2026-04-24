@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Morsel — every bite, better</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --teal:#1D9E75;--teal-l:#E1F5EE;--teal-d:#085041;--teal-m:#0F6E56;
+  --amber:#BA7517;--amber-l:#FAEEDA;--amber-d:#633806;
+  --coral:#D85A30;--coral-l:#FAECE7;--coral-d:#4A1B0C;
+  --green:#639922;--green-l:#EAF3DE;--green-d:#173404;
+  --gray:#888780;--gray-l:#F1EFE8;--gray-d:#2C2C2A;
+  --blue:#378ADD;--blue-l:#E6F1FB;--blue-d:#042C53;
+  --bg:#FAFAF8;--surface:#fff;--border:#E8E6DF;
+  --text:#1a1a18;--muted:#6b6b68;--hint:#a8a7a3;
+  --ff:'Fraunces',serif;--fb:'DM Sans',sans-serif;
+  --r:14px;--rm:10px;--rs:8px;
+  --shadow:0 2px 12px rgba(0,0,0,0.06);
+}
+[data-theme="dark"]{
+  --bg:#0f0f0e;--surface:#1c1c1a;--border:#2e2e2b;
+  --text:#f0efe9;--muted:#9b9a96;--hint:#5a5a57;
+  --teal-l:#0a2e22;--teal-m:#1D9E75;
+  --amber-l:#2a1f08;--amber-d:#FAC775;
+  --coral-l:#2a1208;
+  --green-l:#152108;
+  --gray-l:#222220;
+}
+body{transition:background 0.25s,color 0.25s}
+nav{transition:background 0.25s,border-color 0.25s}
+.theme-toggle{width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--surface);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all 0.2s;flex-shrink:0}
+.theme-toggle:hover{border-color:var(--teal)}
+
+body{font-family:var(--fb);background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;line-height:1.6}
+
+/* NAV */
+nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100}
+.logo{font-family:var(--ff);font-size:22px;font-weight:400;color:var(--teal);letter-spacing:-0.5px;display:flex;align-items:baseline;gap:10px}
+.logo span{color:var(--text);font-style:italic}
+.logo-name{font-family:var(--fb);font-size:12px;font-weight:400;color:var(--hint);letter-spacing:0.02em;font-style:normal;border-left:1px solid var(--border);padding-left:10px;line-height:1}
+.nav-tabs{display:flex;gap:4px}
+.nav-tab{padding:6px 14px;border-radius:20px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border:none;background:none;transition:all 0.15s}
+.nav-tab.active{background:var(--teal-l);color:var(--teal-m)}
+.nav-right{display:flex;align-items:center;gap:12px}
+.streak-badge{background:var(--amber-l);color:var(--amber-d);font-size:12px;font-weight:500;padding:4px 12px;border-radius:20px}
+
+/* PAGES */
+.page{display:none;padding:24px;max-width:800px;margin:0 auto;animation:fadeIn 0.2s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* SECTION TITLE */
+.sec{font-family:var(--ff);font-size:13px;font-weight:400;color:var(--hint);letter-spacing:0.04em;text-transform:uppercase;margin-bottom:12px;margin-top:28px}
+.sec:first-child{margin-top:0}
+
+/* HERO CARD */
+.hero-card{background:linear-gradient(135deg,var(--teal-d) 0%,var(--teal-m) 100%);border-radius:var(--r);padding:24px;color:#fff;margin-bottom:24px;position:relative;overflow:hidden}
+.hero-card::after{content:'';position:absolute;right:-20px;top:-20px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,0.06)}
+.hero-greeting{font-family:var(--ff);font-size:24px;font-weight:300;line-height:1.3;margin-bottom:4px}
+.hero-greeting em{font-style:italic;font-weight:400}
+.hero-sub{font-size:13px;opacity:0.7;margin-bottom:20px}
+.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.hstat{background:rgba(255,255,255,0.12);border-radius:var(--rm);padding:12px}
+.hstat-val{font-size:20px;font-weight:500;margin-bottom:2px}
+.hstat-label{font-size:11px;opacity:0.7}
+
+/* CONTEXT BAR */
+.ctx-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}
+.ctx-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px}
+.ctx-label{font-size:11px;color:var(--hint);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.04em}
+.ctx-val{font-size:15px;font-weight:500;color:var(--text)}
+.ctx-note{font-size:11px;color:var(--muted);margin-top:3px}
+.ctx-note.warn{color:var(--coral)}
+.ctx-note.good{color:var(--teal)}
+
+/* MACROS */
+.macro-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px}
+.macro-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px}
+.macro-name{font-size:11px;color:var(--hint);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px}
+.macro-val{font-size:18px;font-weight:500;color:var(--text);margin-bottom:8px}
+.macro-goal{font-size:11px;color:var(--hint);margin-bottom:8px}
+.prog{width:100%;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;border-radius:2px;transition:width 0.5s ease}
+
+/* MEAL LOG */
+.meal-list{display:flex;flex-direction:column;gap:8px;margin-bottom:24px}
+.meal-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;display:flex;align-items:center;gap:14px;transition:border-color 0.15s}
+.meal-item:hover{border-color:var(--teal)}
+.meal-emoji{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.meal-body{flex:1}
+.meal-name{font-size:14px;font-weight:500;color:var(--text)}
+.meal-meta{font-size:12px;color:var(--muted);margin-top:2px}
+.meal-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.score-ring{width:36px;height:36px;position:relative}
+.score-ring svg{width:36px;height:36px;transform:rotate(-90deg)}
+.score-ring .score-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500}
+.meal-kcal{font-size:11px;color:var(--hint)}
+.add-meal{background:none;border:1.5px dashed var(--border);border-radius:var(--r);padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;width:100%;text-align:left;color:var(--muted);font-size:14px;font-family:var(--fb);transition:border-color 0.15s}
+.add-meal:hover{border-color:var(--teal);color:var(--teal)}
+.add-icon{width:40px;height:40px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--hint)}
+
+/* INSIGHTS */
+.insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px}
+.insight-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px}
+.insight-tag{font-size:10px;font-weight:500;padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:10px;letter-spacing:0.04em;text-transform:uppercase}
+.t-alert{background:var(--coral-l);color:var(--coral)}
+.t-win{background:var(--green-l);color:var(--green-d)}
+.t-tip{background:var(--teal-l);color:var(--teal-m)}
+.t-pattern{background:var(--amber-l);color:var(--amber-d)}
+.insight-text{font-size:13px;color:var(--text);line-height:1.5}
+.insight-cta{margin-top:10px;font-size:12px;font-weight:500;color:var(--teal);cursor:pointer;display:inline-flex;align-items:center;gap:4px;background:none;border:none;font-family:var(--fb);padding:0}
+.insight-cta:hover{opacity:0.8}
+
+/* SUGGESTIONS */
+.suggest-row{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;margin-bottom:24px;scrollbar-width:none}
+.suggest-row::-webkit-scrollbar{display:none}
+.sug-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px;min-width:170px;cursor:pointer;flex-shrink:0;transition:all 0.15s}
+.sug-card:hover{border-color:var(--teal);transform:translateY(-2px)}
+.sug-card.picked{border:2px solid var(--teal);background:var(--teal-l)}
+.sug-emoji{font-size:22px;margin-bottom:8px}
+.sug-name{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px}
+.sug-why{font-size:11px;color:var(--muted);line-height:1.4}
+.sug-kcal{font-size:11px;color:var(--teal-m);margin-top:8px;font-weight:500}
+
+/* HABITS */
+.habit-list{display:flex;flex-direction:column;gap:8px;margin-bottom:24px}
+.habit-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 16px;display:flex;align-items:center;gap:12px}
+.habit-check{width:24px;height:24px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all 0.2s;font-size:13px}
+.habit-check.done{background:var(--teal);border-color:var(--teal);color:#fff}
+.habit-body{flex:1}
+.habit-name{font-size:14px;color:var(--text)}
+.habit-name.done{color:var(--hint);text-decoration:line-through}
+.habit-desc{font-size:11px;color:var(--hint);margin-top:1px}
+.habit-streak{font-size:12px;font-weight:500;color:var(--amber);flex-shrink:0}
+
+/* AI CHAT PANEL */
+.ai-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:24px}
+.ai-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.ai-dot{width:8px;height:8px;border-radius:50%;background:var(--teal);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.ai-title{font-size:14px;font-weight:500;color:var(--text)}
+.ai-sub{font-size:12px;color:var(--hint);margin-left:auto}
+.chat-area{padding:16px;max-height:400px;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
+.msg{max-width:80%;padding:10px 14px;border-radius:12px;font-size:14px;line-height:1.5;animation:msgIn 0.2s ease}
+@keyframes msgIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.msg.user{background:var(--teal);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.msg.ai{background:var(--bg);border:1px solid var(--border);color:var(--text);align-self:flex-start;border-bottom-left-radius:4px}
+.msg.ai.loading{color:var(--hint)}
+.typing{display:flex;gap:4px;align-items:center;padding:4px 0}
+.typing span{width:6px;height:6px;border-radius:50%;background:var(--hint);animation:bounce 1.2s infinite}
+.typing span:nth-child(2){animation-delay:0.2s}
+.typing span:nth-child(3){animation-delay:0.4s}
+@keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
+.chat-input-row{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px}
+.chat-input{flex:1;padding:10px 14px;border:1px solid var(--border);border-radius:20px;font-family:var(--fb);font-size:14px;background:var(--bg);color:var(--text);outline:none;transition:border-color 0.15s}
+.chat-input:focus{border-color:var(--teal)}
+.chat-send{padding:10px 18px;background:var(--teal);color:#fff;border:none;border-radius:20px;font-family:var(--fb);font-size:14px;font-weight:500;cursor:pointer;transition:opacity 0.15s;white-space:nowrap}
+.chat-send:hover{opacity:0.9}
+.chat-send:disabled{opacity:0.5;cursor:not-allowed}
+.quick-chips{padding:8px 16px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+.quick-chips::-webkit-scrollbar{display:none}
+.chip{padding:6px 14px;border:1px solid var(--border);border-radius:20px;font-size:12px;color:var(--muted);cursor:pointer;white-space:nowrap;background:var(--bg);font-family:var(--fb);transition:all 0.15s}
+.chip:hover{border-color:var(--teal);color:var(--teal)}
+
+/* LOG MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity 0.2s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--surface);border-radius:var(--r);width:100%;max-width:480px;overflow:hidden;transform:translateY(20px);transition:transform 0.2s}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-head{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-family:var(--ff);font-size:18px;font-weight:400}
+.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--hint);padding:4px}
+.modal-body{padding:24px}
+.form-group{margin-bottom:18px}
+.form-label{font-size:12px;color:var(--muted);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:0.04em}
+.form-input{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--rm);font-family:var(--fb);font-size:14px;background:var(--bg);color:var(--text);outline:none;transition:border-color 0.15s}
+.form-input:focus{border-color:var(--teal)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-select{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--rm);font-family:var(--fb);font-size:14px;background:var(--bg);color:var(--text);outline:none;cursor:pointer}
+.ai-analyze-btn{width:100%;padding:12px;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--rm);font-family:var(--fb);font-size:14px;color:var(--muted);cursor:pointer;margin-bottom:12px;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.ai-analyze-btn:hover{border-color:var(--teal);color:var(--teal)}
+.ai-result{background:var(--teal-l);border-radius:var(--rm);padding:14px;margin-bottom:16px;font-size:13px;color:var(--teal-d);line-height:1.6;display:none}
+.submit-btn{width:100%;padding:13px;background:var(--teal);color:#fff;border:none;border-radius:var(--rm);font-family:var(--fb);font-size:15px;font-weight:500;cursor:pointer;transition:opacity 0.15s}
+.submit-btn:hover{opacity:0.9}
+
+/* HISTORY PAGE */
+.history-week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:24px}
+.day-col{text-align:center}
+.day-label{font-size:11px;color:var(--hint);margin-bottom:8px}
+.day-dot{width:32px;height:32px;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500}
+.day-dot.good{background:var(--teal-l);color:var(--teal-m)}
+.day-dot.ok{background:var(--amber-l);color:var(--amber-d)}
+.day-dot.miss{background:var(--gray-l);color:var(--gray)}
+.day-dot.today{border:2px solid var(--teal)}
+.history-list{display:flex;flex-direction:column;gap:12px}
+.hist-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;display:flex;gap:14px;align-items:flex-start}
+.hist-date{font-size:11px;color:var(--hint);min-width:60px;margin-top:2px}
+.hist-body{flex:1}
+.hist-meals{font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px}
+.hist-stats{font-size:12px;color:var(--muted)}
+.hist-score{font-size:20px;font-weight:500;color:var(--teal)}
+
+/* PROFILE PAGE */
+.profile-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:16px}
+.profile-avatar{width:64px;height:64px;border-radius:50%;background:var(--teal-l);display:flex;align-items:center;justify-content:center;font-family:var(--ff);font-size:24px;color:var(--teal-m);margin-bottom:16px}
+.profile-name{font-family:var(--ff);font-size:22px;font-weight:400;margin-bottom:4px}
+.profile-meta{font-size:13px;color:var(--muted)}
+.profile-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.pref-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px}
+.pref-label{font-size:11px;color:var(--hint);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:8px}
+.pref-tags{display:flex;flex-wrap:wrap;gap:6px}
+.ptag{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;background:var(--bg);border:1px solid var(--border);color:var(--muted)}
+.ptag.active{background:var(--teal-l);border-color:var(--teal);color:var(--teal-m)}
+
+/* GOALS */
+.goal-list{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+.goal-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;display:flex;align-items:center;gap:12px}
+.goal-icon{font-size:20px;width:36px;text-align:center}
+.goal-body{flex:1}
+.goal-name{font-size:14px;font-weight:500;color:var(--text)}
+.goal-prog-text{font-size:12px;color:var(--muted);margin-top:2px}
+.goal-pct{font-size:16px;font-weight:500;color:var(--teal)}
+
+/* RESPONSIVE */
+@media(max-width:600px){
+  .ctx-grid,.macro-grid{grid-template-columns:1fr 1fr}
+  .insight-grid{grid-template-columns:1fr}
+  .hero-stats{grid-template-columns:1fr 1fr 1fr}
+  .profile-grid{grid-template-columns:1fr}
+  nav{padding:0 16px}
+  .page{padding:16px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">mor<span>sel</span><span class="logo-name">— smart food coach</span></div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('dashboard')">Today</button>
+    <button class="nav-tab" onclick="showPage('coach')">AI Coach</button>
+    <button class="nav-tab" onclick="showPage('history')">History</button>
+    <button class="nav-tab" onclick="showPage('profile')">Profile</button>
+  </div>
+  <div class="nav-right">
+    <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()" title="Toggle dark/light mode">🌙</button>
+    <div class="streak-badge">🔥 12 days</div>
+  </div>
+</nav>
+
+<!-- DASHBOARD PAGE -->
+<div class="page active" id="page-dashboard">
+
+  <div class="hero-card">
+    <div class="hero-greeting">Good afternoon, <em>Deboshreya</em></div>
+    <div class="hero-sub" id="hero-context">Friday · 2:18 PM · Loading context...</div>
+    <div class="hero-stats">
+      <div class="hstat">
+        <div class="hstat-val">1,240</div>
+        <div class="hstat-label">kcal eaten</div>
+      </div>
+      <div class="hstat">
+        <div class="hstat-val">560</div>
+        <div class="hstat-label">kcal left</div>
+      </div>
+      <div class="hstat">
+        <div class="hstat-val">78</div>
+        <div class="hstat-label">today's score</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ctx-grid">
+    <div class="ctx-card">
+      <div class="ctx-label">Hydration</div>
+      <div class="ctx-val">1.4 L</div>
+      <div class="ctx-note warn" id="hydration-note">Drink more — hot day</div>
+    </div>
+    <div class="ctx-card">
+      <div class="ctx-label">Next meal</div>
+      <div class="ctx-val">3:00 PM</div>
+      <div class="ctx-note">in 42 minutes</div>
+    </div>
+    <div class="ctx-card">
+      <div class="ctx-label">Weekly avg score</div>
+      <div class="ctx-val">81</div>
+      <div class="ctx-note good">↑ 5 pts from last week</div>
+    </div>
+  </div>
+
+  <div class="sec">macros today</div>
+  <div class="macro-grid">
+    <div class="macro-card">
+      <div class="macro-name">Protein</div>
+      <div class="macro-val">42g</div>
+      <div class="macro-goal">goal: 75g</div>
+      <div class="prog"><div class="prog-fill" style="width:56%;background:var(--teal)"></div></div>
+    </div>
+    <div class="macro-card">
+      <div class="macro-name">Carbs</div>
+      <div class="macro-val">168g</div>
+      <div class="macro-goal">goal: 240g</div>
+      <div class="prog"><div class="prog-fill" style="width:70%;background:var(--amber)"></div></div>
+    </div>
+    <div class="macro-card">
+      <div class="macro-name">Fats</div>
+      <div class="macro-val">38g</div>
+      <div class="macro-goal">goal: 60g</div>
+      <div class="prog"><div class="prog-fill" style="width:63%;background:var(--coral)"></div></div>
+    </div>
+    <div class="macro-card">
+      <div class="macro-name">Fiber</div>
+      <div class="macro-val">9g</div>
+      <div class="macro-goal">goal: 25g</div>
+      <div class="prog"><div class="prog-fill" style="width:36%;background:var(--green)"></div></div>
+    </div>
+  </div>
+
+  <div class="sec">today's meals</div>
+  <div class="meal-list" id="meal-list">
+    <div class="meal-item">
+      <div class="meal-emoji" style="background:#E1F5EE">🥣</div>
+      <div class="meal-body">
+        <div class="meal-name">Poha with peanuts</div>
+        <div class="meal-meta">Breakfast · 8:15 AM</div>
+      </div>
+      <div class="meal-right">
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="font-size:13px;font-weight:500;color:var(--teal)">88</div>
+          <div style="font-size:11px;color:var(--hint)">score</div>
+        </div>
+        <div class="meal-kcal">340 kcal</div>
+      </div>
+    </div>
+    <div class="meal-item">
+      <div class="meal-emoji" style="background:#FAEEDA">🍛</div>
+      <div class="meal-body">
+        <div class="meal-name">Dal rice + sabzi</div>
+        <div class="meal-meta">Lunch · 1:00 PM</div>
+      </div>
+      <div class="meal-right">
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="font-size:13px;font-weight:500;color:var(--amber)">74</div>
+          <div style="font-size:11px;color:var(--hint)">score</div>
+        </div>
+        <div class="meal-kcal">620 kcal</div>
+      </div>
+    </div>
+  </div>
+  <button class="add-meal" onclick="openLogModal()">
+    <div class="add-icon">+</div>
+    Log a meal
+  </button>
+
+  <div class="sec">smart insights</div>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-tag t-alert">Low fiber alert</div>
+      <div class="insight-text">You're 64% short on fiber today. Add a fruit or raw salad at dinner to close the gap.</div>
+      <button class="insight-cta" onclick="askCoach('Suggest high-fiber Indian dinner options for tonight under 400 calories')">Get dinner ideas →</button>
+    </div>
+    <div class="insight-card">
+      <div class="insight-tag t-win">Streak win</div>
+      <div class="insight-text">12 days with no fried snacks — your longest run yet. Keep it up through dinner tonight.</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-tag t-pattern">Weekly pattern</div>
+      <div class="insight-text">You tend to overeat on Friday evenings. Planning your dinner now reduces the chance by 60%.</div>
+      <button class="insight-cta" onclick="askCoach('Help me plan a light satisfying Friday dinner under 500 calories')">Plan dinner →</button>
+    </div>
+    <div class="insight-card">
+      <div class="insight-tag t-tip">Heat tip</div>
+      <div class="insight-text">It's hot today. Prefer cooling foods like curd, cucumber, coconut water, and mint at dinner.</div>
+      <button class="insight-cta" onclick="askCoach('What are the best cooling foods for a hot day in Indian cuisine?')">Learn more →</button>
+    </div>
+  </div>
+
+  <div class="sec">suggested for dinner</div>
+  <div class="suggest-row">
+    <div class="sug-card" onclick="pickSuggestion(this,'Kachumber salad + curd rice')">
+      <div class="sug-emoji">🥗</div>
+      <div class="sug-name">Kachumber salad + curd rice</div>
+      <div class="sug-why">High fiber, cooling, light on stomach</div>
+      <div class="sug-kcal">~360 kcal</div>
+    </div>
+    <div class="sug-card" onclick="pickSuggestion(this,'Moong dal chilla + raita')">
+      <div class="sug-emoji">🫘</div>
+      <div class="sug-name">Moong dal chilla + raita</div>
+      <div class="sug-why">Protein boost — meets your daily goal</div>
+      <div class="sug-kcal">~420 kcal</div>
+    </div>
+    <div class="sug-card" onclick="pickSuggestion(this,'Khichdi + cucumber raita')">
+      <div class="sug-emoji">🥒</div>
+      <div class="sug-name">Khichdi + cucumber raita</div>
+      <div class="sug-why">Easy to digest, fills fiber gap well</div>
+      <div class="sug-kcal">~390 kcal</div>
+    </div>
+    <div class="sug-card" onclick="pickSuggestion(this,'Vegetable oats upma')">
+      <div class="sug-emoji">🫓</div>
+      <div class="sug-name">Vegetable oats upma</div>
+      <div class="sug-why">Balanced macros, low glycemic index</div>
+      <div class="sug-kcal">~310 kcal</div>
+    </div>
+  </div>
+
+  <div class="sec">today's habits</div>
+  <div class="habit-list">
+    <div class="habit-item">
+      <div class="habit-check done" onclick="toggleHabit(this)">✓</div>
+      <div class="habit-body">
+        <div class="habit-name done">Breakfast before 9 AM</div>
+        <div class="habit-desc">Keeps metabolism steady all day</div>
+      </div>
+      <div class="habit-streak">8d 🔥</div>
+    </div>
+    <div class="habit-item">
+      <div class="habit-check done" onclick="toggleHabit(this)">✓</div>
+      <div class="habit-body">
+        <div class="habit-name done">No fried snacks</div>
+        <div class="habit-desc">Choose steamed, baked or raw instead</div>
+      </div>
+      <div class="habit-streak">12d 🔥</div>
+    </div>
+    <div class="habit-item">
+      <div class="habit-check" onclick="toggleHabit(this)"></div>
+      <div class="habit-body">
+        <div class="habit-name">Drink 2L water</div>
+        <div class="habit-desc">Especially important in hot weather</div>
+      </div>
+      <div class="habit-streak">5d 🔥</div>
+    </div>
+    <div class="habit-item">
+      <div class="habit-check" onclick="toggleHabit(this)"></div>
+      <div class="habit-body">
+        <div class="habit-name">Include one raw vegetable</div>
+        <div class="habit-desc">Salad, carrot sticks, cucumber, etc.</div>
+      </div>
+      <div class="habit-streak">3d 🔥</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- AI COACH PAGE -->
+<div class="page" id="page-coach">
+  <div class="sec">your ai nutrition coach</div>
+  <div class="ai-panel">
+    <div class="ai-header">
+      <div class="ai-dot"></div>
+      <div class="ai-title">Morsel AI Coach</div>
+      <div class="ai-sub">Powered by Claude</div>
+    </div>
+    <div class="quick-chips">
+      <div class="chip" onclick="sendChip('What should I eat for dinner tonight based on my macros?')">Tonight's dinner</div>
+      <div class="chip" onclick="sendChip('Analyze my eating patterns this week')">Weekly analysis</div>
+      <div class="chip" onclick="sendChip('How can I get more protein in my Indian vegetarian diet?')">More protein</div>
+      <div class="chip" onclick="sendChip('Give me a 3-day healthy meal plan for an Indian vegetarian')">Meal plan</div>
+      <div class="chip" onclick="sendChip('What are the healthiest Indian breakfast options under 350 calories?')">Healthy breakfasts</div>
+      <div class="chip" onclick="sendChip('How do I build a habit of eating more vegetables?')">Veggie habits</div>
+    </div>
+    <div class="chat-area" id="chat-area">
+      <div class="msg ai">Namaste! I'm your Morsel nutrition coach. I know you're in Udaipur today, it's a hot afternoon, and you've had 1,240 kcal so far. You're running low on fiber and protein. How can I help you make tonight's meal count? 🌿</div>
+    </div>
+    <div class="chat-input-row">
+      <input class="chat-input" id="chat-input" placeholder="Ask anything about food & nutrition..." onkeydown="if(event.key==='Enter')sendChat()">
+      <button class="chat-send" id="send-btn" onclick="sendChat()">Send</button>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORY PAGE -->
+<div class="page" id="page-history">
+  <div class="sec">this week at a glance</div>
+  <div class="history-week">
+    <div class="day-col"><div class="day-label">Mon</div><div class="day-dot good">85</div></div>
+    <div class="day-col"><div class="day-label">Tue</div><div class="day-dot good">91</div></div>
+    <div class="day-col"><div class="day-label">Wed</div><div class="day-dot ok">72</div></div>
+    <div class="day-col"><div class="day-label">Thu</div><div class="day-dot good">88</div></div>
+    <div class="day-col"><div class="day-label">Fri</div><div class="day-dot today ok">78</div></div>
+    <div class="day-col"><div class="day-label">Sat</div><div class="day-dot miss">—</div></div>
+    <div class="day-col"><div class="day-label">Sun</div><div class="day-dot miss">—</div></div>
+  </div>
+
+  <div class="sec">meal history</div>
+  <div class="history-list">
+    <div class="hist-item">
+      <div class="hist-date">Today</div>
+      <div class="hist-body">
+        <div class="hist-meals">Poha · Dal rice + sabzi</div>
+        <div class="hist-stats">1,240 kcal · Protein 42g · Fiber 9g</div>
+      </div>
+      <div class="hist-score">78</div>
+    </div>
+    <div class="hist-item">
+      <div class="hist-date">Thu, 23</div>
+      <div class="hist-body">
+        <div class="hist-meals">Upma · Rajma chawal · Curd rice</div>
+        <div class="hist-stats">1,720 kcal · Protein 68g · Fiber 22g</div>
+      </div>
+      <div class="hist-score" style="color:var(--teal)">88</div>
+    </div>
+    <div class="hist-item">
+      <div class="hist-date">Wed, 22</div>
+      <div class="hist-body">
+        <div class="hist-meals">Idli sambhar · Chole + roti · Khichdi</div>
+        <div class="hist-stats">1,890 kcal · Protein 54g · Fiber 18g</div>
+      </div>
+      <div class="hist-score" style="color:var(--amber)">72</div>
+    </div>
+    <div class="hist-item">
+      <div class="hist-date">Tue, 21</div>
+      <div class="hist-body">
+        <div class="hist-meals">Poha · Dal tadka · Moong dal chilla</div>
+        <div class="hist-stats">1,650 kcal · Protein 72g · Fiber 24g</div>
+      </div>
+      <div class="hist-score" style="color:var(--teal)">91</div>
+    </div>
+    <div class="hist-item">
+      <div class="hist-date">Mon, 20</div>
+      <div class="hist-body">
+        <div class="hist-meals">Dosa · Palak paneer + roti · Raita</div>
+        <div class="hist-stats">1,800 kcal · Protein 65g · Fiber 20g</div>
+      </div>
+      <div class="hist-score" style="color:var(--teal)">85</div>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE PAGE -->
+<div class="page" id="page-profile">
+  <div class="profile-card">
+    <div class="profile-avatar">P</div>
+    <div class="profile-name">Deboshreya</div>
+    <div class="profile-meta">28 · Female · Udaipur, Rajasthan · Vegetarian</div>
+  </div>
+
+  <div class="sec">goals</div>
+  <div class="goal-list">
+    <div class="goal-item">
+      <div class="goal-icon">⚖️</div>
+      <div class="goal-body">
+        <div class="goal-name">Maintain healthy weight</div>
+        <div class="goal-prog-text">BMI 22.4 · Target: 21–23</div>
+        <div class="prog" style="margin-top:8px"><div class="prog-fill" style="width:85%;background:var(--teal)"></div></div>
+      </div>
+      <div class="goal-pct">85%</div>
+    </div>
+    <div class="goal-item">
+      <div class="goal-icon">💪</div>
+      <div class="goal-body">
+        <div class="goal-name">Increase daily protein</div>
+        <div class="goal-prog-text">Currently avg 58g · Target: 75g/day</div>
+        <div class="prog" style="margin-top:8px"><div class="prog-fill" style="width:77%;background:var(--amber)"></div></div>
+      </div>
+      <div class="goal-pct" style="color:var(--amber)">77%</div>
+    </div>
+    <div class="goal-item">
+      <div class="goal-icon">🥦</div>
+      <div class="goal-body">
+        <div class="goal-name">Eat more fiber daily</div>
+        <div class="goal-prog-text">Currently avg 16g · Target: 25g/day</div>
+        <div class="prog" style="margin-top:8px"><div class="prog-fill" style="width:64%;background:var(--coral)"></div></div>
+      </div>
+      <div class="goal-pct" style="color:var(--coral)">64%</div>
+    </div>
+  </div>
+
+  <div class="sec">preferences</div>
+  <div class="profile-grid">
+    <div class="pref-card">
+      <div class="pref-label">Diet type</div>
+      <div class="pref-tags">
+        <div class="ptag active">Vegetarian</div>
+        <div class="ptag">Vegan</div>
+        <div class="ptag">Non-veg</div>
+      </div>
+    </div>
+    <div class="pref-card">
+      <div class="pref-label">Cuisine</div>
+      <div class="pref-tags">
+        <div class="ptag active">Rajasthani</div>
+        <div class="ptag active">North Indian</div>
+        <div class="ptag">South Indian</div>
+      </div>
+    </div>
+    <div class="pref-card">
+      <div class="pref-label">Allergies</div>
+      <div class="pref-tags">
+        <div class="ptag active">No gluten</div>
+        <div class="ptag">No dairy</div>
+        <div class="ptag">No nuts</div>
+      </div>
+    </div>
+    <div class="pref-card">
+      <div class="pref-label">Activity level</div>
+      <div class="pref-tags">
+        <div class="ptag">Sedentary</div>
+        <div class="ptag active">Moderate</div>
+        <div class="ptag">Active</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LOG MEAL MODAL -->
+<div class="modal-overlay" id="log-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">Log a meal</div>
+      <button class="modal-close" onclick="closeLogModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">What did you eat?</label>
+        <input class="form-input" id="meal-input" placeholder="e.g. Poha with peanuts and chai" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Meal type</label>
+          <select class="form-select" id="meal-type">
+            <option>Breakfast</option>
+            <option>Lunch</option>
+            <option>Dinner</option>
+            <option>Snack</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Time</label>
+          <input class="form-input" id="meal-time" type="time" value="14:18">
+        </div>
+      </div>
+      <button class="ai-analyze-btn" onclick="analyzeMeal()" id="analyze-btn">
+        ✦ Analyze with AI
+      </button>
+      <div class="ai-result" id="ai-result"></div>
+      <button class="submit-btn" onclick="submitMeal()">Log meal</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SYSTEM_PROMPT = `You are Morsel's AI nutrition coach — a warm, knowledgeable, and practical guide for healthy eating. The user is Deboshreya, a 28-year-old vegetarian woman in Udaipur, Rajasthan, India. She prefers Rajasthani and North Indian cuisine and is gluten-sensitive. Her daily goals: 1800 kcal, 75g protein, 240g carbs, 60g fat, 25g fiber. Today she has eaten 1240 kcal (breakfast: Poha with peanuts 340kcal, lunch: Dal rice + sabzi 620kcal). She is 560 kcal under her goal. She has a 12-day streak of avoiding fried snacks. It is a hot afternoon (39°C) in Udaipur. Keep responses concise, warm, and actionable. Use real Indian food names and context. Format with occasional line breaks for readability but avoid heavy markdown.`;
+
+let chatHistory = [];
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function toggleHabit(el) {
+  const isDone = el.classList.contains('done');
+  const nameEl = el.nextElementSibling.querySelector('.habit-name');
+  if (isDone) { el.classList.remove('done'); el.textContent = ''; nameEl.classList.remove('done'); }
+  else { el.classList.add('done'); el.textContent = '✓'; nameEl.classList.add('done'); }
+}
+
+function pickSuggestion(el, name) {
+  document.querySelectorAll('.sug-card').forEach(c => c.classList.remove('picked'));
+  el.classList.add('picked');
+  askCoach('I want to have ' + name + ' for dinner. Give me a simple recipe and tips to make it healthier.');
+}
+
+function askCoach(q) {
+  showPage('coach');
+  document.querySelectorAll('.nav-tab').forEach((t,i) => { if(i===1) t.classList.add('active'); else t.classList.remove('active'); });
+  document.getElementById('chat-input').value = q;
+  setTimeout(sendChat, 300);
+}
+
+function sendChip(q) {
+  document.getElementById('chat-input').value = q;
+  sendChat();
+}
+
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const btn = document.getElementById('send-btn');
+  const area = document.getElementById('chat-area');
+  const text = input.value.trim();
+  if (!text) return;
+
+  input.value = '';
+  btn.disabled = true;
+
+  const userMsg = document.createElement('div');
+  userMsg.className = 'msg user';
+  userMsg.textContent = text;
+  area.appendChild(userMsg);
+  area.scrollTop = area.scrollHeight;
+
+  const loadingMsg = document.createElement('div');
+  loadingMsg.className = 'msg ai loading';
+  loadingMsg.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
+  area.appendChild(loadingMsg);
+  area.scrollTop = area.scrollHeight;
+
+  chatHistory.push({ role: 'user', content: text });
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: SYSTEM_PROMPT,
+        messages: chatHistory
+      })
+    });
+    const data = await res.json();
+    const reply = data.content?.[0]?.text || 'Sorry, I could not respond right now.';
+    chatHistory.push({ role: 'assistant', content: reply });
+    loadingMsg.className = 'msg ai';
+    loadingMsg.textContent = reply;
+  } catch (e) {
+    loadingMsg.className = 'msg ai';
+    loadingMsg.textContent = 'Could not connect to AI coach. Please try again.';
+  }
+
+  btn.disabled = false;
+  area.scrollTop = area.scrollHeight;
+}
+
+function openLogModal() {
+  document.getElementById('log-modal').classList.add('open');
+  document.getElementById('ai-result').style.display = 'none';
+  document.getElementById('ai-result').textContent = '';
+}
+
+function closeLogModal() {
+  document.getElementById('log-modal').classList.remove('open');
+}
+
+async function analyzeMeal() {
+  const meal = document.getElementById('meal-input').value.trim();
+  if (!meal) { alert('Please enter what you ate first.'); return; }
+  const btn = document.getElementById('analyze-btn');
+  const result = document.getElementById('ai-result');
+  btn.textContent = 'Analyzing...';
+  btn.disabled = true;
+  result.style.display = 'none';
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{
+          role: 'user',
+          content: `Analyze this meal for a vegetarian Indian woman (1800 kcal/day goal, 75g protein goal): "${meal}". Provide: estimated calories, protein, carbs, fat, fiber (all approximate), a health score out of 100, and one short tip. Keep it brief and practical. Format: "~X kcal · Protein Xg · Carbs Xg · Fat Xg · Fiber Xg · Score: X/100 · Tip: [one sentence]"`
+        }]
+      })
+    });
+    const data = await res.json();
+    result.textContent = data.content?.[0]?.text || 'Could not analyze.';
+    result.style.display = 'block';
+  } catch (e) {
+    result.textContent = 'AI analysis unavailable. Log manually.';
+    result.style.display = 'block';
+  }
+
+  btn.textContent = '✦ Analyze with AI';
+  btn.disabled = false;
+}
+
+function submitMeal() {
+  const meal = document.getElementById('meal-input').value.trim();
+  const type = document.getElementById('meal-type').value;
+  const time = document.getElementById('meal-time').value;
+  if (!meal) { alert('Please enter a meal.'); return; }
+
+  const emojis = { Breakfast:'🌅', Lunch:'☀️', Dinner:'🌙', Snack:'🍎' };
+  const colors = { Breakfast:'#E1F5EE', Lunch:'#FAEEDA', Dinner:'#E6F1FB', Snack:'#EAF3DE' };
+
+  const list = document.getElementById('meal-list');
+  const item = document.createElement('div');
+  item.className = 'meal-item';
+  item.innerHTML = `
+    <div class="meal-emoji" style="background:${colors[type]}">${emojis[type]}</div>
+    <div class="meal-body">
+      <div class="meal-name">${meal}</div>
+      <div class="meal-meta">${type} · ${time}</div>
+    </div>
+    <div class="meal-right">
+      <div style="font-size:13px;font-weight:500;color:var(--teal)">—</div>
+      <div class="meal-kcal">logged</div>
+    </div>`;
+  list.appendChild(item);
+
+  document.getElementById('meal-input').value = '';
+  closeLogModal();
+}
+
+// Set contextual hero subtitle
+(function() {
+  const now = new Date();
+  const h = now.getHours();
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const greeting = h < 12 ? 'morning' : h < 17 ? 'afternoon' : 'evening';
+  const day = days[now.getDay()];
+  document.getElementById('hero-context').textContent = `${day} · ${now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})} · Udaipur — 39°C outside`;
+  document.querySelector('.hero-greeting').innerHTML = `Good ${greeting}, <em>Deboshreya</em>`;
+})();
+
+document.getElementById('log-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeLogModal();
+});
+
+function toggleTheme() {
+  const html = document.documentElement;
+  const btn = document.getElementById('theme-btn');
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  if (isDark) {
+    html.removeAttribute('data-theme');
+    btn.textContent = '🌙';
+    localStorage.setItem('morsel-theme','light');
+  } else {
+    html.setAttribute('data-theme','dark');
+    btn.textContent = '☀️';
+    localStorage.setItem('morsel-theme','dark');
+  }
+}
+// Load saved theme
+(function(){
+  const saved = localStorage.getItem('morsel-theme');
+  if (saved === 'dark') {
+    document.documentElement.setAttribute('data-theme','dark');
+    document.addEventListener('DOMContentLoaded', function(){
+      const btn = document.getElementById('theme-btn');
+      if(btn) btn.textContent = '☀️';
+    });
+  }
+})();
+</script>
+</body>
+</html>
